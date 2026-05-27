@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:aihub-test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  sql:
+    init:
+      mode: never
+
+aihub:
+  jwt:
+    secret: test-secret-test-secret-test-secret-test-secret
+    access-token-validity-seconds: 900
+    refresh-token-validity-seconds: 1209600
+  cors:
+    allowed-origins: http://localhost:3000
+  oauth:
+    providers:
+      google:
+        client-id: test-google-client-id
+        client-secret: test-google-client-secret
+        token-uri: https://oauth2.googleapis.com/token
+        issuer-uri: https://accounts.google.com
+        user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+      kakao:
+        client-id: test-kakao-client-id
+        client-secret: test-kakao-client-secret
+        token-uri: https://kauth.kakao.com/oauth/token
+        issuer-uri: https://kauth.kakao.com
+        user-info-uri: https://kapi.kakao.com/v1/oidc/userinfo
+      github:
+        client-id: test-github-client-id
+        client-secret: test-github-client-secret
+        token-uri: https://github.com/login/oauth/access_token
+        user-info-uri: https://api.github.com/user
+        email-uri: https://api.github.com/user/emails
