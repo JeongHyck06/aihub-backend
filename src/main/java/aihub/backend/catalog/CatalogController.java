@@ -23,25 +23,57 @@ public class CatalogController {
         this.catalogService = catalogService;
     }
 
-    @Operation(summary = "카테고리 목록")
+    @Operation(summary = "홈 통합 응답 (비로그인 가능)")
+    @GetMapping("/home/summary")
+    public ApiResponse<HomeResponse> home() {
+        return ApiResponse.ok(catalogService.home());
+    }
+
+    @Operation(summary = "카테고리 목록 (비로그인 가능)")
     @GetMapping("/categories")
     public ApiResponse<List<CategoryResponse>> categories() {
         return ApiResponse.ok(catalogService.listCategories());
     }
 
-    @Operation(summary = "AI 서비스 검색")
+    @Operation(summary = "인기 서비스 (비로그인 가능)")
+    @GetMapping("/services/popular")
+    public ApiResponse<List<PopularServiceResponse>> popular(
+            @RequestParam(defaultValue = "4") int limit
+    ) {
+        return ApiResponse.ok(catalogService.popular(limit));
+    }
+
+    @Operation(summary = "AI 서비스 검색 (비로그인 가능)")
     @GetMapping("/search")
     public PageResponse<SearchResultResponse> search(
             @RequestParam(required = false) String query,
-            @RequestParam(required = false) String category,
+            @RequestParam(name = "categories", required = false) String category,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "popular") String sort
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ratingAvg"));
+        Sort sortOption = switch (sort.toLowerCase()) {
+            case "rating" -> Sort.by(Sort.Direction.DESC, "ratingAvg");
+            case "newest" -> Sort.by(Sort.Direction.DESC, "id");
+            default -> Sort.by(Sort.Direction.DESC, "reviewCount");
+        };
+        Pageable pageable = PageRequest.of(page, size, sortOption);
         return PageResponse.from(catalogService.search(query, category, pageable));
     }
 
-    @Operation(summary = "AI 서비스 상세")
+    @Operation(summary = "검색 필터 메타 (비로그인 가능)")
+    @GetMapping("/search/filters")
+    public ApiResponse<List<SearchFilterGroupResponse>> filters() {
+        return ApiResponse.ok(catalogService.filters());
+    }
+
+    @Operation(summary = "인기 검색어 (비로그인 가능)")
+    @GetMapping("/search/hot-keywords")
+    public ApiResponse<List<String>> hotKeywords() {
+        return ApiResponse.ok(catalogService.hotKeywords());
+    }
+
+    @Operation(summary = "AI 서비스 상세 (비로그인 가능)")
     @GetMapping("/services/{slug}")
     public ApiResponse<ServiceDetailResponse> serviceDetail(@PathVariable String slug) {
         return ApiResponse.ok(catalogService.getService(slug));
