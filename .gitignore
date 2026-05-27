@@ -36,3 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 /API_DESIGN.md
+
+### Local application config ###
+src/main/resources/application-local.yml
