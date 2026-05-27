@@ -123,7 +123,8 @@ public class AuthService {
         User user = oAuthAccountRepository.findByProviderAndProviderUserId(provider, profile.providerUserId())
                 .map(OAuthAccount::getUser)
                 .orElseGet(() -> linkOrCreateOAuthUser(profile));
-        return issueTokens(user);
+        syncUserFromOAuthProfile(user, profile);
+        return issueTokens(user, profile.profileImageUrl());
     }
 
     private EmailVerification issueEmailCode(User user) {
@@ -133,10 +134,22 @@ public class AuthService {
     }
 
     private AuthTokenResponse issueTokens(User user) {
+        return issueTokens(user, null);
+    }
+
+    private AuthTokenResponse issueTokens(User user, String profileImageUrl) {
         String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getEmail(), user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(), user.getEmail(), user.getRole());
         user.setRefreshToken(refreshToken);
-        return new AuthTokenResponse(accessToken, refreshToken, AuthUserResponse.from(user));
+        return new AuthTokenResponse(accessToken, refreshToken, AuthUserResponse.from(user, profileImageUrl));
+    }
+
+    private void syncUserFromOAuthProfile(User user, OAuthProfile profile) {
+        if (profile.name() == null || profile.name().isBlank()) {
+            return;
+        }
+        user.setName(profile.name());
+        user.setDisplayName(profile.name());
     }
 
     private User linkOrCreateOAuthUser(OAuthProfile profile) {

@@ -86,16 +86,30 @@ public class OAuthClient {
         String subject = jwt.getSubject();
         String email = claimAsString(jwt, "email");
         String name = claimAsString(jwt, "name");
+        String picture = claimAsString(jwt, "picture");
 
-        if (email == null || email.isBlank()) {
+        if (email == null || email.isBlank() || name == null || name.isBlank() || picture == null || picture.isBlank()) {
             JsonNode userInfo = fetchJson(providerProperties.userInfoUri(), token.accessToken());
-            email = readText(userInfo, "email");
-            name = name == null ? readText(userInfo, "name") : name;
+            if (email == null || email.isBlank()) {
+                email = readText(userInfo, "email");
+            }
+            if (name == null || name.isBlank()) {
+                name = readText(userInfo, "name");
+            }
+            if (picture == null || picture.isBlank()) {
+                picture = readText(userInfo, "picture");
+            }
         }
         if (email == null || email.isBlank()) {
             throw new BusinessException(ErrorCode.AUTH_INVALID_CREDENTIALS, "소셜 계정 이메일을 확인할 수 없습니다.");
         }
-        return new OAuthProfile(provider, subject, email, name == null || name.isBlank() ? email : name);
+        return new OAuthProfile(
+                provider,
+                subject,
+                email,
+                name == null || name.isBlank() ? email : name,
+                picture
+        );
     }
 
     private OAuthProfile fetchGithubProfile(
@@ -119,7 +133,7 @@ public class OAuthClient {
         if (email == null || email.isBlank()) {
             throw new BusinessException(ErrorCode.AUTH_INVALID_CREDENTIALS, "GitHub 계정 이메일을 확인할 수 없습니다.");
         }
-        return new OAuthProfile(OAuthProvider.GITHUB, id, email, name == null || name.isBlank() ? email : name);
+        return new OAuthProfile(OAuthProvider.GITHUB, id, email, name == null || name.isBlank() ? email : name, null);
     }
 
     private JsonNode fetchJson(String uri, String accessToken) {

@@ -4,6 +4,7 @@ public record OAuthProfile(
         OAuthProvider provider,
         String providerUserId,
         String email,
-        String name
+        String name,
+        String profileImageUrl
 ) {
 }
