@@ -38,7 +38,26 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/categories", "/api/v1/search", "/api/v1/services/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/home/summary",
+                                "/api/v1/categories",
+                                "/api/v1/services/popular",
+                                "/api/v1/search",
+                                "/api/v1/search/filters",
+                                "/api/v1/search/hot-keywords",
+                                "/api/v1/services/*",
+                                "/api/v1/services/*/reviews",
+                                "/api/v1/community/posts",
+                                "/api/v1/community/posts/*",
+                                "/api/v1/community/posts/*/comments",
+                                "/api/v1/compare",
+                                "/api/v1/compare/insight",
+                                "/api/v1/recommend/options"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/recommend/rule-based",
+                                "/api/v1/recommend/natural-language"
+                        ).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
