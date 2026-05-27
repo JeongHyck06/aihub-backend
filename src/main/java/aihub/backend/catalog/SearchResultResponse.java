@@ -31,7 +31,7 @@ public record SearchResultResponse(
                 "/models/" + service.getSlug(),
                 bestMatch ? List.of("BEST MATCH") : List.of(),
                 bestMatch,
-                service.getTags()
+                List.copyOf(service.getTags())
         );
     }
 }

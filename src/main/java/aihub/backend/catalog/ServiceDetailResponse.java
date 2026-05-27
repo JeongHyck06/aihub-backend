@@ -27,8 +27,8 @@ public record ServiceDetailResponse(
                 service.getReviewCount(),
                 service.getTags().stream().limit(2).toList(),
                 List.of(service.getDescription().split("\\n")),
-                service.getFeatures(),
-                service.getTags(),
+                List.copyOf(service.getFeatures()),
+                List.copyOf(service.getTags()),
                 service.cardDescription(),
                 List.of(
                         new ServiceInfoItemResponse("가격", service.getPriceText(), null),
