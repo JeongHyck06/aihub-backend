@@ -1,0 +1,11 @@
+package aihub.backend.auth;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record OAuthTokenResponse(
+        @JsonProperty("access_token") String accessToken,
+        @JsonProperty("id_token") String idToken,
+        @JsonProperty("token_type") String tokenType,
+        String scope
+) {
+}
